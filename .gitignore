@@ -6,9 +6,8 @@ __pycache__/
 .venv/
 
 # 运行产物（append-only，但大文件与二进制约约不等于全提交）
-# 模型/数据缓存不提交
-/data/
-/media/disk2/YZX/hf_caches/
+# 模型/数据缓存不提交(绝对路径在仓库外, 无需规则)
+# repo 内 data/ 是评估数据(官方jsonl/子集), 应提交, 不要 ignore
 
 # run JSON 是研究记录，应该提交；但模型权重、图像缓存等二进制排除
 # （results/runs/*.json 保留在 git 里做可追溯，除非过大则注释掉）
