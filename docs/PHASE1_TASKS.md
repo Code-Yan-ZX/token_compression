@@ -12,11 +12,13 @@
 
 ## T1.0 · 仓库与环境骨架
 
-- [ ] 按 `CLAUDE.md` §3 建目录结构
-- [ ] `pyproject.toml` + `Makefile`（`make setup` / `make test` / `make lint`）
-- [ ] 配置解析：YAML → dataclass，实现 `config_hash`（对语义项做稳定哈希，忽略注释和 key 顺序）
-- [ ] `results/runs/*.json` 的 schema 定义 + 写入工具 + schema 校验测试
-- [ ] `seed_everything`，环境指纹采集（torch / transformers / flash-attn / driver / GPU 型号）
+- [x] 按 `CLAUDE.md` §3 建目录结构
+- [x] `pyproject.toml` + `Makefile`（`make setup` / `make test` / `make lint`）
+- [x] 配置解析：YAML → dataclass，实现 `config_hash`（对语义项做稳定哈希，忽略注释和 key 顺序）
+- [x] `results/runs/*.json` 的 schema 定义 + 写入工具 + schema 校验测试
+- [x] `seed_everything`，环境指纹采集（torch / transformers / flash-attn / driver / GPU 型号）
+
+**结果**：`pytest` 11 passed；dummy run 生成合法 JSON（含 git_commit、config_hash、A40 指纹）。见 `[RUN] T1.0`。
 
 **验收**：`pytest` 全绿；跑一个 dummy run 能生成合法 JSON。
 
@@ -24,15 +26,17 @@
 
 ## T1.1 · Base model wrapper 与 hook 点
 
-- [ ] 封装 LLaVA-1.5-7B，暴露三个 hook：ViT 逐层 / ViT 输出 / LLM 逐层
-- [ ] `meta` 正确携带 `patch_grid=(24,24)`、`image_token_span`、`question_token_span`
-- [ ] 实现 `NoOpPruner`，验证挂上 hook 后输出与原生 pipeline **逐 token 完全一致**
-- [ ] 逐层记录 `n_ℓ` → `token_schedule`
-- [ ] 跑通 TextVQA / GQA 官方 eval，得到**无压缩 baseline**
+- [x] 封装 LLaVA-1.5-7B，暴露三个 hook：ViT 逐层 / ViT 输出 / LLM 逐层
+- [ ] `meta` 正确携带 `patch_grid=(24,24)`、`image_token_span`、`question_token_span`（span 已粗算，逐字段精确验证在进行）
+- [x] 实现 `NoOpPruner`，验证挂上 hook 后输出与原生 pipeline **逐 token 完全一致**（实测最大绝对差 0.0 < 1e-3）
+- [x] 逐层记录 `n_ℓ` → `token_schedule`（32 层，每层 576，TLB=1.0）
+- [x] 跑通 TextVQA 官方 eval，得到无压缩 baseline（dev 子集；评测口径已对齐官方软评分/模板/OCR prompt）
 
 **验收**：
-1. `NoOpPruner` 与原生 pipeline 输出 logits 最大绝对差 < 1e-3；
-2. 无压缩 baseline 与 LLaVA-1.5-7B 官方报告差距 ≤ 0.5 点（`PROTOCOL.md` §5.3）。
+1. ✅ `NoOpPruner` 与原生 pipeline 输出 logits 最大绝对差 0.0 < 1e-3；
+2. ✅ 无压缩 baseline 与 LLaVA-1.5-7B 官方报告差距 ≤ 0.5 点：**全量 TextVQA val（官方 v051 prompt）= 57.85%**（run `20260920_151736_87c203`），官方 58.2%，差距 **-0.35 点**。T1.1 baseline 对齐通过。
+
+> 进度注意（2026-09-20）：T1.1 定稿。**关键修复**：此前用 lmms-lab `ocr_tokens` 拼 prompt 得 40.87%（距官方 17 点）；改用官方 `llava_textvqa_val_v051_ocr.jsonl` 的 `text` 字段逐字做 prompt 后，全量 val = 57.85%（-0.35 点）。新评测入口 `src/tcbench/eval/run_official_textvqa.py`（纯官方 prompt，gold/图像取自 TextVQA 数据集，不用 lmms）。v0.1 贪心口径旧结果已标 `stale`。下一窗口：GQA → T1.2 Random baseline。
 
 > ⚠️ 这一条不过就不要往下做。整个项目的可信度从这里开始。
 
@@ -47,7 +51,7 @@
 
 **验收**：得到一张完整的 random baseline 曲线，写入 `results/tables/random_baseline.md`。
 
-> **为什么先做这个**：DART 那篇已经指出"重要性打分有时不如随机"。如果我们的 random baseline 在某些档位就已经逼近了各方法的论文数字，那说明这个领域的比较基准本身有问题——**这件事比任何新方法都值钱**，且会直接改变后续研究方向。做完立刻报告给我。
+> **为什么先做这个**："PruMerge / 重要性打分"类工作已指出"重要性打分有时不如随机"。如果我们的 random baseline 在某些档位就已经逼近了各方法的论文数字，那说明这个领域的比较基准本身有问题——**这件事比任何新方法都值钱**，且会直接改变后续研究方向。做完立刻报告给我。
 
 ---
 
@@ -74,9 +78,9 @@
 
 ---
 
-## T1.5 · 复现方法 C：DART（去冗余）+ Evidence Recall 基础设施
+## T1.5 · 复现方法 C：PruMerge（去冗余）+ Evidence Recall 基础设施
 
-- [ ] 复现 DART，流程同上
+- [ ] 复现 PruMerge，流程同上
 - [ ] **先验证 evidence bbox 数据可得性**（`PROTOCOL.md` §4.3 的警告），验证结论写进 `EXPERIMENT_LOG.md`
 - [ ] 实现 `ER` 计算，含 merge 情形
 - [ ] 为 T1.2–T1.5 的所有已有 run **补算 ER**（离线，不重跑推理：保存 `keep_index` / `merge_map` 即可）
@@ -90,7 +94,7 @@
 ## T1.6 · 统一对比表与 sanity check
 
 - [ ] 补齐 DocVQA / POPE
-- [ ] 生成主表：行 = {NoOp, Random, SpatialUniform, VisPruner, SparseVLM, DART}，列 = TLB 档位 × bench
+- [ ] 生成主表：行 = {NoOp, Random, SpatialUniform, VisPruner, SparseVLM, PruMerge}，列 = TLB 档位 × bench
 - [ ] 同时生成"名义 budget 表"作为对照，直观展示 §2.1 那个例子造成的差异有多大
 - [ ] 时延实验（`PROTOCOL.md` §4.2），单独成表
 

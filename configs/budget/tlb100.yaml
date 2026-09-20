@@ -1,0 +1,3 @@
+# TLB=1.000 无压缩档位（PROTOCOL §2.2）
+kind: "tlb"
+value: 1.0

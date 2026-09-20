@@ -1,0 +1,69 @@
+{
+  "run_id": "20260920_085659_85f70f",
+  "timestamp": "2026-09-20T08:56:59.088819+00:00",
+  "git_commit": "8615e6564ed3549f8efe6e0b234e8507110135f6",
+  "protocol_version": "v0.1",
+  "config_hash": "addf1028d464747b231a255f9ed500209d67bf31eae8ac5afe9782ed3c7369ee",
+  "full_config_dump": {
+    "base": {
+      "model_id": "llava-hf/llava-1.5-7b-hf",
+      "revision": "TBD_LOCK",
+      "dtype": "float16",
+      "attn_impl": "eager",
+      "patch_grid": [
+        24,
+        24
+      ],
+      "llm_layers": 32,
+      "max_new_tokens": 64,
+      "bench_suffix": "Answer the question using a single word or phrase."
+    },
+    "method": {
+      "name": "NoOp",
+      "stage": "pre_llm",
+      "params": {}
+    },
+    "budget": {
+      "kind": "tlb",
+      "value": 0.111
+    },
+    "bench": "textvqa",
+    "split": "val",
+    "seed": 0,
+    "prompt": "Answer the question using a single word or phrase."
+  },
+  "base_model_id": "llava-hf/llava-1.5-7b-hf",
+  "base_model_revision": "TBD_LOCK",
+  "method": "NoOp",
+  "budget_spec": {
+    "kind": "tlb",
+    "value": 0.111
+  },
+  "seed": 0,
+  "hardware": {
+    "python_version": "3.12.4",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "torch_version": "2.8.0+cu128",
+    "cuda_version": "12.8",
+    "nvidia_driver": "560.35.05",
+    "transformers_version": "4.57.3",
+    "flash_attn_version": null,
+    "accelerate_version": "1.7.0",
+    "datasets_version": "3.6.0",
+    "gpu": [
+      {
+        "index": 0,
+        "name": "NVIDIA A40",
+        "mem_mb": 45518
+      }
+    ]
+  },
+  "metrics": {
+    "accuracy": "NOT_RUN"
+  },
+  "artifacts_path": "",
+  "bench": "textvqa",
+  "split": "val",
+  "token_schedule": [],
+  "tlb": null
+}

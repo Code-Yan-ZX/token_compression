@@ -1,6 +1,6 @@
 # PROTOCOL.md — 统一实验协议
 
-**协议版本：`v0.1`**
+**协议版本：`v0.2`**
 **状态：冻结。变更流程见 `CLAUDE.md` §2.2。**
 
 本文件存在的唯一理由：现有 token 压缩论文之间的对比大多不可比。本项目所有结论的可信度都建立在本文件上。
@@ -11,7 +11,7 @@
 
 同样一句"保留 128 个 visual token"，在不同论文里含义完全不同：
 
-- VisPruner / DART / PruMerge：在 LLM 第 0 层之前就只剩 128 个，**全部 32 层**都只跑 128 个。
+- VisPruner / PruMerge：在 LLM 第 0 层之前就只剩 128 个，**全部 32 层**都只跑 128 个。
 - FastV：前 K 层跑满 576 个，第 K 层之后才剩 128 个。
 - SparseVLM：逐层递减，每层数量都不同。
 - DyVTE：visual token 在某层整体退出，之后为 0。
@@ -51,7 +51,7 @@
 
 - Prompt 模板：严格使用 base model 官方 chat template，**不做任何针对方法的调整**。
 - 每个 benchmark 的 instruction 后缀（如 `Answer the question using a single word or phrase.`）统一写在 `configs/base/*.yaml` 的 `bench_suffix` 字段，所有方法共用。
-- 解码：`do_sample=False`，`num_beams=1`，`max_new_tokens=64`（DocVQA 用 128）。
+- 解码：与 LLaVA 官方评测（`third_party/SparseVLMs/llava/eval/model_vqa_loader.py`）逐项一致，`do_sample=True`，`temperature=0.2`，`num_beams=1`，`max_new_tokens=128`。确保与三方法论文（都基于 LLaVA 官方评测）完全同口径，唯一变量是各方法算法本身。
 - `seed=0`（random baseline 额外跑 `seed ∈ {0,1,2}`）。
 
 ---
@@ -117,6 +117,7 @@ runner 必须逐层记录 `n_ℓ` 并存入结果 JSON 的 `token_schedule` 字�
 - Phase 1 必跑：**TextVQA + GQA**（一个敏感、一个不敏感，对比最有信息量）。其余在 T1.6 补齐。
 - 开发期可用固定子集加速，但**子集必须是预先随机抽样并落盘的固定 id 列表**（`data/subsets/<bench>_dev1k.json`），不得每次重抽。子集结果在 JSON 里标 `split: "dev1k"`，**不得与全量结果同表对比**。
 - 评测代码统一用官方 eval 脚本，放在 `src/tcbench/eval/official/`，不要自己重写指标。
+- **TextVQA 的 prompt 必须用官方 `data/ocr/llava_textvqa_val_v051_ocr.jsonl` 每条的 `text` 字段**（含 `Reference OCR token:`），入口 `src/tcbench/eval/run_official_textvqa.py`。不得用 lmms-lab `ocr_tokens` 等替代源——那会导致基线偏离官方 ~17 点（T1.1 已证实）。
 
 ---
 
@@ -134,7 +135,7 @@ runner 必须逐层记录 `n_ℓ` 并存入结果 JSON 的 `token_schedule` 字�
 - `peak_gpu_mem_mb`
 - `attn_impl`：实际使用的注意力实现
 
-> DART 那篇明确报告了"实际总时间"而不只是 prefill 加速，这是对的做法。很多方法 prefill 快了但总时间没变。**本项目同时报告两者，不允许只报 prefill。**
+> PruMerge 那篇明确报告了"实际总时间"而不只是 prefill 加速，这是对的做法。很多方法 prefill 快了但总时间没变。**本项目同时报告两者，不允许只报 prefill。**
 
 ### 4.3 诊断指标（Phase 1 建基础设施，Phase 2 重用）
 
@@ -176,3 +177,5 @@ ER 是本项目后续论证的关键：假设是"coverage 高但 ER 低"能解�
 | 版本 | 日期 | 变更 | 原因 |
 |---|---|---|---|
 | v0.1 | (初始) | 建立协议 | — |
+| v0.1 | 2026-09-20 | 方法 C 命名纠错：DART → **PruMerge**（arXiv 2403.15388）。不改任何协议规则语义。 | `docs/EXPERIMENT_LOG.md` [DEC] 2026-09-20 |
+| v0.2 | 2026-09-20 | 解码口径与 LLaVA 官方对齐：`do_sample=False` → `do_sample=True, temperature=0.2`；`max_new_tokens` 64 → 128。目的：让无压缩 baseline 与三方法论文（均基于 LLaVA 官方评测）完全同口径，唯一变量是各方法算法。 | PROTOCOL §1.3 |

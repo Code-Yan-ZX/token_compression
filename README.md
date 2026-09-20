@@ -24,8 +24,8 @@
 
 **Phase 1：统一实验台 + 复现。** 尚无结论性结果。
 
-覆盖方法：`NoOp` / `Random` / `SpatialUniform` / `VisPruner` / `SparseVLM` / `DART`
-主模型：LLaVA-1.5-7B（迁移验证：Qwen2.5-VL-7B）
+覆盖方法：`NoOp` / `Random` / `SpatialUniform` / `VisPruner` / `SparseVLM` / `PruMerge`
+主模型：LLaVA-1.5-7B（迁移验证：Qwen3-VL-8B）
 
 ## 快速开始
 

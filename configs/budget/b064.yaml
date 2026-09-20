@@ -1,0 +1,3 @@
+# TLB=0.111 档位（PROTOCOL §2.2）。pre-LLM 方法对应保留 64 个 token。
+kind: "tlb"
+value: 0.111

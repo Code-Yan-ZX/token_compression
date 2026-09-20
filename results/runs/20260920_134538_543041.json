@@ -1,0 +1,104 @@
+{
+  "run_id": "20260920_134538_543041",
+  "timestamp": "2026-09-20T13:45:38.339112+00:00",
+  "git_commit": "8615e6564ed3549f8efe6e0b234e8507110135f6",
+  "protocol_version": "v0.2",
+  "config_hash": "86f08be3496924b60caa3769af5e92fdb30423a31d1230db5e4ae09e91c866e4",
+  "full_config_dump": {
+    "base": {
+      "model_id": "llava-hf/llava-1.5-7b-hf",
+      "revision": "TBD_LOCK",
+      "dtype": "float16",
+      "attn_impl": "eager",
+      "patch_grid": [
+        24,
+        24
+      ],
+      "llm_layers": 32,
+      "max_new_tokens": 128,
+      "temperature": 0.2,
+      "bench_suffix": "Answer the question using a single word or phrase."
+    },
+    "method": {
+      "name": "NoOp",
+      "stage": "pre_llm",
+      "params": {}
+    },
+    "budget": {
+      "kind": "tlb",
+      "value": 1.0
+    },
+    "bench": "textvqa",
+    "split": "val",
+    "seed": 0,
+    "prompt": "Answer the question using a single word or phrase."
+  },
+  "base_model_id": "llava-hf/llava-1.5-7b-hf",
+  "base_model_revision": "TBD_LOCK",
+  "method": "NoOp",
+  "budget_spec": {
+    "kind": "tlb",
+    "value": 1.0
+  },
+  "seed": 0,
+  "hardware": {
+    "python_version": "3.12.4",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "torch_version": "2.8.0+cu128",
+    "cuda_version": "12.8",
+    "nvidia_driver": "560.35.05",
+    "transformers_version": "4.57.3",
+    "flash_attn_version": null,
+    "accelerate_version": "1.7.0",
+    "datasets_version": "3.6.0",
+    "gpu": [
+      {
+        "index": 0,
+        "name": "NVIDIA A40",
+        "mem_mb": 45518
+      }
+    ]
+  },
+  "metrics": {
+    "accuracy": 0.40865999999999997,
+    "n_samples": 5000
+  },
+  "artifacts_path": "results/artifacts/20260920_134538_543041/predictions.jsonl",
+  "bench": "textvqa",
+  "split": "val",
+  "token_schedule": [
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576
+  ],
+  "tlb": 1.0
+}

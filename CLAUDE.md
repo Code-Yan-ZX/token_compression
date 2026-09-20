@@ -8,7 +8,7 @@
 
 研究 VLM 视觉 token 压缩（token pruning / compression）。
 
-当前的科研判断是：现有方法（FastV、VisionZip、SparseVLM、DART、VisPruner、MMTok 等）优化的都是**代理指标**——attention 分数、视觉显著性、token 多样性、集合覆盖度——而不是"答对这道题所必需的证据"。不同论文之间的对比又普遍不公平（budget 定义不一致、base model 不一致、prompt 不一致）。
+当前的科研判断是：现有方法（FastV、VisionZip、SparseVLM、PruMerge、VisPruner、MMTok 等）优化的都是**代理指标**——attention 分数、视觉显著性、token 多样性、集合覆盖度——而不是"答对这道题所必需的证据"。不同论文之间的对比又普遍不公平（budget 定义不一致、base model 不一致、prompt 不一致）。
 
 所以项目的第一阶段目标不是提新方法，而是：
 

@@ -1,0 +1,105 @@
+{
+  "run_id": "20260920_103553_0ba512",
+  "timestamp": "2026-09-20T10:35:53.617310+00:00",
+  "git_commit": "8615e6564ed3549f8efe6e0b234e8507110135f6",
+  "protocol_version": "v0.1",
+  "config_hash": "43cf9a47b220cc3524d285a754a9071fce753ff97f8dd92f57a73d5dcb7416aa",
+  "full_config_dump": {
+    "base": {
+      "model_id": "llava-hf/llava-1.5-7b-hf",
+      "revision": "TBD_LOCK",
+      "dtype": "float16",
+      "attn_impl": "eager",
+      "patch_grid": [
+        24,
+        24
+      ],
+      "llm_layers": 32,
+      "max_new_tokens": 64,
+      "bench_suffix": "Answer the question using a single word or phrase."
+    },
+    "method": {
+      "name": "NoOp",
+      "stage": "pre_llm",
+      "params": {}
+    },
+    "budget": {
+      "kind": "tlb",
+      "value": 1.0
+    },
+    "bench": "textvqa",
+    "split": "val",
+    "seed": 0,
+    "prompt": "Answer the question using a single word or phrase."
+  },
+  "base_model_id": "llava-hf/llava-1.5-7b-hf",
+  "base_model_revision": "TBD_LOCK",
+  "method": "NoOp",
+  "budget_spec": {
+    "kind": "tlb",
+    "value": 1.0
+  },
+  "seed": 0,
+  "hardware": {
+    "python_version": "3.12.4",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "torch_version": "2.8.0+cu128",
+    "cuda_version": "12.8",
+    "nvidia_driver": "560.35.05",
+    "transformers_version": "4.57.3",
+    "flash_attn_version": null,
+    "accelerate_version": "1.7.0",
+    "datasets_version": "3.6.0",
+    "gpu": [
+      {
+        "index": 0,
+        "name": "NVIDIA A40",
+        "mem_mb": 45518
+      }
+    ]
+  },
+  "metrics": {
+    "accuracy": 0.509,
+    "n_samples": 1000
+  },
+  "artifacts_path": "",
+  "bench": "textvqa",
+  "split": "dev1000",
+  "token_schedule": [
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576,
+    576
+  ],
+  "tlb": 1.0,
+  "stale": true,
+  "stale_reason": "PROTOCOL 升 v0.2: 解码 temp=0.2 与官方对齐; v0.1 贪心口径不再与新结果同表对比"
+}

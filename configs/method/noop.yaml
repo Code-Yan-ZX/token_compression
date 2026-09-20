@@ -1,0 +1,3 @@
+# NoOp 基线：不压缩。用于 T1.1 验证 hook 挂上后与原生 pipeline 完全一致。
+name: "NoOp"
+stage: "pre_llm"

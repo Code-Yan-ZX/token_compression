@@ -1,0 +1,27 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+
+# 运行产物（append-only，但大文件与二进制约约不等于全提交）
+# 模型/数据缓存不提交
+/data/
+/media/disk2/YZX/hf_caches/
+
+# run JSON 是研究记录，应该提交；但模型权重、图像缓存等二进制排除
+# （results/runs/*.json 保留在 git 里做可追溯，除非过大则注释掉）
+# 若 results 过大可用下面这行排除离线 artifacts
+# results/artifacts/
+
+# 临时
+*.log
+/tmp/
+nohup.out
+
+# third_party 参考实现只读、公网可再 clone，不入库
+third_party/
+
+# OS
+.DS_Store

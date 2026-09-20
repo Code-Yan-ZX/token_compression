@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tcbench"
+version = "0.1.0"
+description = "Unified, reproducible benchmark for VLM visual token compression"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.1",
+    "transformers>=4.40",
+    "accelerate",
+    "datasets",
+    "pyyaml",
+    "numpy",
+    "Pillow",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+    "black",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]
