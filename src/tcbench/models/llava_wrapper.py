@@ -145,8 +145,13 @@ class LLaVAWrapper:
     # 推理
     # ------------------------------------------------------------------ #
     @torch.no_grad()
-    def generate(self, images, question: str, bench_suffix: str = "", max_new_tokens: int = 128):
-        """端到端生成，同时逐层记录 token_schedule 并运行 pruner hook。"""
+    def generate(self, images, question: str, bench_suffix: str = "", max_new_tokens: int = 128,
+                 do_sample: bool | None = None, temperature: float | None = None, num_beams: int | None = None):
+        """端到端生成，同时逐层记录 token_schedule 并运行 pruner hook。
+
+        PROTOCOL v0.3: 默认贪心 do_sample=False, temperature=0, num_beams=1。
+        保留采样参数入口仅用于对比、不作主实验默认。
+        """
         if self._model is None:
             self.load()
         self.token_schedule = []
@@ -181,9 +186,9 @@ class LLaVAWrapper:
         self._current_meta = meta
 
         gen_kwargs = {
-            "do_sample": True,
-            "temperature": 0.2,  # PROTOCOL §1.3 v0.2：与 LLaVA 官方评测一致
-            "num_beams": 1,
+            "do_sample": False if do_sample is None else do_sample,
+            "temperature": 0.0 if temperature is None else temperature,
+            "num_beams": 1 if num_beams is None else num_beams,
             "max_new_tokens": max_new_tokens,
         }
         # image_inputs 需单独传给 generate；input_ids/pixel_values 都由处理器给出

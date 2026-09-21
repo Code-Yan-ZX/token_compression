@@ -1,6 +1,6 @@
 # PROTOCOL.md — 统一实验协议
 
-**协议版本：`v0.2`**
+**协议版本：`v0.3`**
 **状态：冻结。变更流程见 `CLAUDE.md` §2.2。**
 
 本文件存在的唯一理由：现有 token 压缩论文之间的对比大多不可比。本项目所有结论的可信度都建立在本文件上。
@@ -51,7 +51,7 @@
 
 - Prompt 模板：严格使用 base model 官方 chat template，**不做任何针对方法的调整**。
 - 每个 benchmark 的 instruction 后缀（如 `Answer the question using a single word or phrase.`）统一写在 `configs/base/*.yaml` 的 `bench_suffix` 字段，所有方法共用。
-- 解码：与 LLaVA 官方评测（`third_party/SparseVLMs/llava/eval/model_vqa_loader.py`）逐项一致，`do_sample=True`，`temperature=0.2`，`num_beams=1`，`max_new_tokens=128`。确保与三方法论文（都基于 LLaVA 官方评测）完全同口径，唯一变量是各方法算法本身。
+- 解码：主实验统一 **贪心** `do_sample=False`，`temperature=0`，`num_beams=1`，`max_new_tokens=128`。这是三方法原仓库 eval 脚本（均 `--temperature 0`）与 LLaVA 官方 58.2 的同一口径，唯一变量是各方法算法本身。
 - `seed=0`（random baseline 额外跑 `seed ∈ {0,1,2}`）。
 
 ---
@@ -179,3 +179,4 @@ ER 是本项目后续论证的关键：假设是"coverage 高但 ER 低"能解�
 | v0.1 | (初始) | 建立协议 | — |
 | v0.1 | 2026-09-20 | 方法 C 命名纠错：DART → **PruMerge**（arXiv 2403.15388）。不改任何协议规则语义。 | `docs/EXPERIMENT_LOG.md` [DEC] 2026-09-20 |
 | v0.2 | 2026-09-20 | 解码口径与 LLaVA 官方对齐：`do_sample=False` → `do_sample=True, temperature=0.2`；`max_new_tokens` 64 → 128。目的：让无压缩 baseline 与三方法论文（均基于 LLaVA 官方评测）完全同口径，唯一变量是各方法算法。 | PROTOCOL §1.3 |
+| v0.3 | 2026-09-21 | 解码口径回落 **贪心**：`do_sample=True, temperature=0.2` → `do_sample=False, temperature=0, num_beams=1, max_new_tokens=128`。原因：三篇方法原仓库 eval 脚本均为 `--temperature 0`（贪心），LLaVA 官方 58.2 亦为贪心；v0.2 的采样口径与它们不同。v0.2 采样口径下所有结果（含 57.85% 无压缩基线）标 `stale`，不再与 v0.3 结果同表对比。 | PROTOCOL §1.3；[DEC] 2026-09-21 |

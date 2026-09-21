@@ -24,3 +24,8 @@ third_party/
 
 # OS
 .DS_Store
+# 配对评测原始逐题 JSONL（过大，可由 scripts+data 复现）；保留 SUMMARY.md 与 results/runs/*.json
+results/paired_eval/*/answers/
+results/paired_eval/*/recs/
+results/paired_eval/*/logs/
+results/paired_eval/gqa/
