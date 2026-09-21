@@ -46,3 +46,8 @@
   - TLB≈0.222 档：TextVQA 上方法只领先随机 ≤0.42（VisPruner 56.66, SparseVLM 56.36, random/spatial 56.24）；**GQA 上随机(58.08) 反超 VisPruner(57.88) 与 SparseVLM(57.78)**。
   - 逐题答案三个随机 seed 100% 相同、且与 spatial 相同 → 此档"保留哪个 token"对逐题答案鲁棒，数量(TLB)起主导。**待 keep_index 审计确认**：是否为 kernel 层把不同子集输入抹平，还是方法真与子集身份无关。
   - 高压缩处方法分化明显：SparseVLM"64"(0.143)GQA=52.97 vs VisPruner(0.111)=55.75。
+
+### [DEC] 2026-09-21 · 质量协议与效率协议分离（EFFICIENCY_PROTOCOL e1.0）
+- 当前 v0.3 已可靠回答准确率与 actual TLB，但不足以支持“更快/更省显存”的结论。新增独立效率协议，要求分阶段时延、TTFT、总时延、吞吐、peak allocated/reserved 显存、KV cache、selector overhead，以及 `matched_eager` / `best_compatible` 双轨报告。
+- 这是不改变模型输出的加法测量扩展：正在运行和已完成的 v0.3 质量 run 继续有效，不重跑全量准确率；后续 profile run 用 `linked_run_ids` 关联质量 run。
+- 最终比较以质量—真实成本 Pareto 前沿为主。TLB 保留为统一 token 计算口径，但不得替代真实系统指标。

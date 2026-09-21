@@ -8,7 +8,7 @@
 
 最典型的问题：同样是"保留 64 个 visual token"，pre-LLM 剪枝方法的 32 层都只跑 64 个，而 FastV 前 K 层跑满 576 个——实际视觉 token 计算量相差 50% 以上，却被放在同一列里比较。
 
-本仓库引入 **Token-Layer Budget (TLB)** 作为统一口径，在完全相同的条件下重测代表性方法，并提供 **Evidence Recall (ER)** 诊断指标。
+本仓库引入 **Token-Layer Budget (TLB)** 作为统一口径，在完全相同的条件下重测代表性方法，并提供 **Evidence Recall (ER)** 诊断指标。系统效率单独实测 TTFT、端到端时延、吞吐、显存、KV cache 与方法自身开销，最终用质量—成本 Pareto 曲线比较方法。
 
 ## 文档
 
@@ -16,6 +16,7 @@
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | 了解协作规则（Claude Code 必读） |
 | [`docs/PROTOCOL.md`](docs/PROTOCOL.md) | **理解 TLB / ER 的定义，以及为什么必须这么定**（核心） |
+| [`docs/EFFICIENCY_PROTOCOL.md`](docs/EFFICIENCY_PROTOCOL.md) | **理解真实时延、吞吐和显存怎样公平测量**（核心） |
 | [`docs/RESEARCH_PLAN.md`](docs/RESEARCH_PLAN.md) | 了解研究判断与 go/no-go 决策点 |
 | [`docs/PHASE1_TASKS.md`](docs/PHASE1_TASKS.md) | 知道现在该做什么 |
 | [`docs/EXPERIMENT_LOG.md`](docs/EXPERIMENT_LOG.md) | 看实验记录与观察 |

@@ -43,6 +43,20 @@ _REQUIRED_TOP_LEVEL = (
     "method", "budget_spec", "seed", "hardware", "metrics", "artifacts_path",
 )
 
+# run_kind 三字段对 2026-09-21 之后的新 run 必填。校验器仍把缺失字段的历史 JSON
+# 视为 legacy quality run，避免为了 schema 升级改写 append-only 结果。
+
+_EFFICIENCY_REQUIRED = (
+    "attention_track",
+    "attn_impl",
+    "batch_size",
+    "warmup_iterations",
+    "profile_samples",
+    "passes",
+    "raw_timings_path",
+    "summary",
+)
+
 
 @dataclass
 class RunRecord:
@@ -64,6 +78,9 @@ class RunRecord:
     split: str = ""
     token_schedule: list[int] = field(default_factory=list)  # 长度 L,LLM 各层输入端 vtok 数
     tlb: float | None = None  # 由 token_schedule 实测算出,不允许从配置反推
+    run_kind: str = "quality"  # quality | efficiency
+    measurement_protocol_version: str = ""
+    linked_run_ids: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         # 保留全部字段(含 None),确保 schema 必填项不因 None 而消失
@@ -96,6 +113,22 @@ def validate_run(rec: RunRecord | dict[str, Any]) -> list[str]:
         errs.append("token_schedule 必须是 list")
     if "tlb" in d and d["tlb"] is not None and not (0 <= d["tlb"] <= 1.0001):
         errs.append(f"tlb 越界: {d.get('tlb')}")
+    run_kind = d.get("run_kind", "quality")
+    if run_kind not in {"quality", "efficiency"}:
+        errs.append(f"run_kind 非法: {run_kind!r}")
+    if run_kind == "efficiency":
+        if not d.get("measurement_protocol_version"):
+            errs.append("efficiency run 缺少 measurement_protocol_version")
+        if not d.get("linked_run_ids"):
+            errs.append("efficiency run 缺少 linked_run_ids")
+        metrics = d.get("metrics", {})
+        efficiency = metrics.get("efficiency") if isinstance(metrics, dict) else None
+        if not isinstance(efficiency, dict):
+            errs.append("efficiency run 的 metrics.efficiency 必须是 dict")
+        else:
+            for key in _EFFICIENCY_REQUIRED:
+                if key not in efficiency:
+                    errs.append(f"efficiency run 缺少 metrics.efficiency.{key}")
     return errs
 
 

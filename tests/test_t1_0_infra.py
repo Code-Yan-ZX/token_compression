@@ -133,6 +133,36 @@ def test_dump_run_illegal_id(tmp_path: Path):
         dump_run(r, runs_dir=tmp_path)
 
 
+def test_efficiency_run_requires_measurement_linkage():
+    d = _mk_run().to_dict()
+    d["run_kind"] = "efficiency"
+    d["metrics"] = {}
+    errs = validate_run(d)
+    assert "efficiency run 缺少 measurement_protocol_version" in errs
+    assert "efficiency run 缺少 linked_run_ids" in errs
+    assert "efficiency run 的 metrics.efficiency 必须是 dict" in errs
+
+
+def test_efficiency_run_schema_accepts_complete_record():
+    d = _mk_run().to_dict()
+    d["run_kind"] = "efficiency"
+    d["measurement_protocol_version"] = "e1.0"
+    d["linked_run_ids"] = ["quality_1"]
+    d["metrics"] = {
+        "efficiency": {
+            "attention_track": "matched_eager",
+            "attn_impl": "eager",
+            "batch_size": 1,
+            "warmup_iterations": 5,
+            "profile_samples": 100,
+            "passes": 3,
+            "raw_timings_path": "results/artifacts/profile_ok/timings.jsonl",
+            "summary": {},
+        }
+    }
+    assert validate_run(d) == []
+
+
 # --------------------------------------------------------------------------- #
 # seed / env
 # --------------------------------------------------------------------------- #

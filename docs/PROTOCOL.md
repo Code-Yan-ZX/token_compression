@@ -123,19 +123,24 @@ runner 必须逐层记录 `n_ℓ` 并存入结果 JSON 的 `token_schedule` 字�
 
 ## 4. 必须报告的指标
 
-每个 run 至少报告：
+质量 run 至少报告 §4.1；独立的效率 profile run 按 §4.2 报告系统指标。诊断指标按
+任务进度离线补算，不得把未测量字段填成估计值。
 
 ### 4.1 精度
 - benchmark 主指标
 - `token_schedule`、实测 `TLB`
 
-### 4.2 效率（实测，非估算）
-- `prefill_latency_ms`：TTFT，batch=1，固定硬件，**warmup ≥ 5 次，取 20 次中位数**
-- `total_latency_ms`：端到端生成完整回答
-- `peak_gpu_mem_mb`
-- `attn_impl`：实际使用的注意力实现
+### 4.2 效率（独立 profile run，非估算）
 
-> PruMerge 那篇明确报告了"实际总时间"而不只是 prefill 加速，这是对的做法。很多方法 prefill 快了但总时间没变。**本项目同时报告两者，不允许只报 prefill。**
+完整定义见 [`EFFICIENCY_PROTOCOL.md`](EFFICIENCY_PROTOCOL.md) `e1.0`。必须报告分阶段时延、
+TTFT、总时延、吞吐、峰值 allocated/reserved 显存、KV cache、选择器开销和 attention
+实现，并分别运行 `matched_eager` 与 `best_compatible` 两条轨道。
+
+> TLB 是统一 token 计算口径，不是真实系统性能。很多方法 prefill 快了但总时间没变；
+> 排序、聚类、merge/recycle 也可能抵消节省。本项目不允许只报 TLB、FLOPs 或 prefill。
+
+效率协议是加法测量扩展，不改变本文件 v0.3 的模型输出语义。已有和正在运行的 v0.3
+质量实验继续有效，效率 run 通过 `linked_run_ids` 与之关联。
 
 ### 4.3 诊断指标（Phase 1 建基础设施，Phase 2 重用）
 
@@ -180,3 +185,6 @@ ER 是本项目后续论证的关键：假设是"coverage 高但 ER 低"能解�
 | v0.1 | 2026-09-20 | 方法 C 命名纠错：DART → **PruMerge**（arXiv 2403.15388）。不改任何协议规则语义。 | `docs/EXPERIMENT_LOG.md` [DEC] 2026-09-20 |
 | v0.2 | 2026-09-20 | 解码口径与 LLaVA 官方对齐：`do_sample=False` → `do_sample=True, temperature=0.2`；`max_new_tokens` 64 → 128。目的：让无压缩 baseline 与三方法论文（均基于 LLaVA 官方评测）完全同口径，唯一变量是各方法算法。 | PROTOCOL §1.3 |
 | v0.3 | 2026-09-21 | 解码口径回落 **贪心**：`do_sample=True, temperature=0.2` → `do_sample=False, temperature=0, num_beams=1, max_new_tokens=128`。原因：三篇方法原仓库 eval 脚本均为 `--temperature 0`（贪心），LLaVA 官方 58.2 亦为贪心；v0.2 的采样口径与它们不同。v0.2 采样口径下所有结果（含 57.85% 无压缩基线）标 `stale`，不再与 v0.3 结果同表对比。 | PROTOCOL §1.3；[DEC] 2026-09-21 |
+
+> 2026-09-21：端到端效率测量独立版本化为 `EFFICIENCY_PROTOCOL e1.0`。这是加法扩展，
+> 不 bump 本质量协议，也不使 v0.3 质量结果 stale。

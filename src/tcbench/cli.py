@@ -17,7 +17,7 @@ from tcbench.results import RunRecord, dump_run, gen_run_id, validate_run
 from tcbench.seed import EnvFingerprint, seed_everything
 
 
-PROTOCOL_VERSION = "v0.2"
+PROTOCOL_VERSION = "v0.3"
 
 
 def cmd_verify_protocol(args: argparse.Namespace) -> int:

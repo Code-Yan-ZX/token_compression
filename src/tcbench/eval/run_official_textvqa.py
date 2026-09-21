@@ -27,7 +27,7 @@ from tcbench.models.llava_wrapper import LLaVAWrapper
 from tcbench.results import RunRecord, dump_run, gen_run_id, git_commit, validate_run
 from tcbench.seed import EnvFingerprint, seed_everything
 
-PROTOCOL_VERSION = "v0.2"
+PROTOCOL_VERSION = "v0.3"
 _eval = TextVQAAccuracyEvaluator()
 
 
@@ -117,6 +117,7 @@ def main() -> int:
         metrics={"accuracy": acc, "n_samples": len(preds)},
         artifacts_path=str(run_dir / "predictions.jsonl"),
         bench=cfg.bench, split=split, token_schedule=schedule, tlb=tlb,
+        run_kind="quality",
     )
     errs = validate_run(rec)
     if errs:

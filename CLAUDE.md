@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-本文件是本仓库对 Claude Code 的常驻指令。**每次开始任务前先读本文件和 `docs/PROTOCOL.md`。**
+本文件是本仓库对 Claude Code 的常驻指令。**每次开始任务前先读本文件和 `docs/PROTOCOL.md`；涉及时延、显存、吞吐或 FLOPs 时还必须读 `docs/EFFICIENCY_PROTOCOL.md`。**
 
 ---
 
@@ -30,11 +30,12 @@
 
 ### 2.2 协议不可私自变更
 
-`docs/PROTOCOL.md` 定义的 budget 计算方式、prompt 模板、评测 split、解码参数是**冻结的**。
+`docs/PROTOCOL.md` 定义的质量与 budget 口径、`docs/EFFICIENCY_PROTOCOL.md` 定义的系统效率口径都是**冻结的**。
 
 - 如果你认为协议有问题（很可能确实有），**先停下来，在回复里说明问题，等我确认**。
-- 确认后：先改 `docs/PROTOCOL.md`，bump 协议版本号，在 `docs/EXPERIMENT_LOG.md` 记录变更原因，**然后**才改代码。
-- 协议版本号变更后，之前的结果全部标记为 `stale`，不得与新结果放在同一张表里对比。
+- 确认后：先改对应协议，在 `docs/EXPERIMENT_LOG.md` 记录变更原因，**然后**才改代码。
+- 修改 base model、数据、prompt、解码、评分或 budget 语义时 bump `PROTOCOL` 版本；之前的质量结果全部标记为 `stale`。
+- 新增不改变模型输出的效率测量项时 bump `EFFICIENCY_PROTOCOL` 版本；已有质量 run 继续有效，旧 profile run 只对其原效率协议有效。禁止为了补效率字段重跑或覆盖已有质量 run。
 
 ### 2.3 可复现性
 
@@ -42,12 +43,16 @@
 
 ```
 run_id, timestamp, git_commit, protocol_version,
+run_kind, measurement_protocol_version, linked_run_ids,
 config_hash, full_config_dump,
 base_model_id, base_model_revision,
 method, budget_spec, seed,
 hardware (gpu type, count, driver, torch/transformers/flash-attn version),
 metrics {...}, artifacts_path
 ```
+
+- `run_kind=quality` 时，`measurement_protocol_version` 可为空。
+- `run_kind=efficiency` 时，必须按 `docs/EFFICIENCY_PROTOCOL.md` 写入原始逐样本计时，并用 `linked_run_ids` 关联质量结果。
 
 - `results/` 目录 **append-only**。不要覆盖、不要删除、不要"清理"旧结果。
 - 任何进入论文或汇总表的数字，必须能追溯到一个 `run_id`。
@@ -74,6 +79,7 @@ Phase 1 阶段：
 ├── README.md
 ├── docs/
 │   ├── PROTOCOL.md            # 【核心】统一实验协议，冻结
+│   ├── EFFICIENCY_PROTOCOL.md # 【核心】端到端效率测量协议，冻结
 │   ├── RESEARCH_PLAN.md       # 研究路线与 go/no-go 判断点
 │   ├── PHASE1_TASKS.md        # 当前阶段任务分解
 │   └── EXPERIMENT_LOG.md      # 实验日志（人工 + Claude 共同维护）

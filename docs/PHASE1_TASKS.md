@@ -96,13 +96,19 @@
 - [ ] 补齐 DocVQA / POPE
 - [ ] 生成主表：行 = {NoOp, Random, SpatialUniform, VisPruner, SparseVLM, PruMerge}，列 = TLB 档位 × bench
 - [ ] 同时生成"名义 budget 表"作为对照，直观展示 §2.1 那个例子造成的差异有多大
-- [ ] 时延实验（`PROTOCOL.md` §4.2），单独成表
+- [ ] 质量表完成后，按 `EFFICIENCY_PROTOCOL e1.0` 建立独立 profile run；不重跑全量准确率
+- [ ] 两条 attention 轨道分别成表：`matched_eager` / `best_compatible`
+- [ ] 实测分阶段时延：vision encoder / compression / LLM prefill / decode / total
+- [ ] 实测吞吐、peak allocated/reserved 显存、KV cache；FLOPs 无可靠计数器则标 `NOT_MEASURED`
+- [ ] 生成质量—成本 Pareto 图，以及掉分 ≤1.0 / ≤2.0 点时的最省成本 operating point
 
 **验收问题（必须在 `EXPERIMENT_LOG.md` 里逐条回答）**：
 1. TLB 对齐后，各方法的相对排名和原论文一致吗？哪些变了？
 2. 有没有方法在某些档位输给 random / spatial-uniform？
 3. TextVQA 和 GQA 上的排名一致吗？不一致说明什么？
 4. prefill 加速和端到端加速的差距有多大？
+5. TLB / FLOPs 的排序是否与真实 TTFT、总时延和吞吐排序一致？
+6. Random/Spatial 的低算法复杂度是否转化为更低的 selector overhead？
 
 ---
 
@@ -145,5 +151,6 @@
 3. Oracle 上界数字出来了，方向决策做完了
 4. ER 能算，且已有初步分布观察
 5. `EXPERIMENT_LOG.md` 里有 ≥ 5 条真实的 Observation
+6. 一组符合 `EFFICIENCY_PROTOCOL e1.0` 的可追溯 profile run 与质量—成本 Pareto 图
 
 **Phase 1 结束后再讨论方法设计。在此之前不要写任何 "我们提出……"。**

@@ -26,7 +26,7 @@ from tcbench.results import RunRecord, dump_run, gen_run_id, git_commit, validat
 from tcbench.seed import EnvFingerprint, seed_everything
 
 
-PROTOCOL_VERSION = "v0.2"
+PROTOCOL_VERSION = "v0.3"
 
 
 def tlb_from_schedule(n0: int, schedule: list[int]) -> float:
@@ -124,6 +124,7 @@ def main() -> int:
         split="val" if is_full_val else f"dev{args.dev_n}",
         token_schedule=token_schedule,
         tlb=tlb,
+        run_kind="quality",
     )
     errs = validate_run(rec)
     if errs:
