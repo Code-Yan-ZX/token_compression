@@ -39,6 +39,8 @@
 ---
 
 ## 下一步
+> **历史状态，已被 2026-09-21 的 SCoRe-first 决策取代。不要据此继续执行。**
+
 - GQA（数据 config 待定）→ T1.2 Random baseline → T1.3-1.5 复现三种方法（VisPruner / SparseVLM / PruMerge）。
 ### [OBS] 2026-09-21 · 配对评测：TLB 对齐后方法 vs 随机对照（重要）
 - 同 base/greedy/逐题实记 TLB 下，TextVQA+GQA 两套：
@@ -51,3 +53,11 @@
 - 当前 v0.3 已可靠回答准确率与 actual TLB，但不足以支持“更快/更省显存”的结论。新增独立效率协议，要求分阶段时延、TTFT、总时延、吞吐、peak allocated/reserved 显存、KV cache、selector overhead，以及 `matched_eager` / `best_compatible` 双轨报告。
 - 这是不改变模型输出的加法测量扩展：正在运行和已完成的 v0.3 质量 run 继续有效，不重跑全量准确率；后续 profile run 用 `linked_run_ids` 关联质量 run。
 - 最终比较以质量—真实成本 Pareto 前沿为主。TLB 保留为统一 token 计算口径，但不得替代真实系统指标。
+
+### [DEC] 2026-09-21 · 主线转为 SCoRe-first 方法研究
+- **论文目标**从“广泛横向比较旧方法/分析 benchmark”改为“从当前强基线出发提出新方法”。诊断仍做，但只作为内部选题和方法验证工具，不作为最终论文终点。
+- 当前研究锚点为 **SCoRe（CVPR 2026）**。先做论文忠实复现，再在 tcbench 受控条件下复测；两个 Track 的数字与结论严格分开。
+- 旧 `PHASE1_TASKS.md` 删除，由 `CURRENT_TASKS.md` 替代。VisPruner / SparseVLM / PruMerge 全矩阵 sweep 不再自动执行。
+- 首要待验证缺口是 SCoRe 的 fixed-`K`：用每样本多预算曲线与 Oracle 判断自适应 token 数是否存在足够空间。候选方法为基于边际 salience–coverage 收益的自适应停止，但在 go/no-go 通过前仅标记为 `HYPOTHESIS`。
+- 历史 run、`PROTOCOL v0.3`、随机/空间基线观察和效率协议全部保留，标为历史资产；不得删除或覆盖。旧 random 三 seed 与 spatial 逐题答案完全相同的问题必须先审计，未排除实现错误前不用于论文论证。
+- 开发阶段可以少跑旧 baseline，但最终投稿必须包含 SCoRe 和提交时最近的直接相关工作；不能只比较 2024/2025 方法并宣称 SOTA。
